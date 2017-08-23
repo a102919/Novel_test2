@@ -14,9 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,9 +37,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tsai.alan.novel_test2.R;
 import com.tsai.alan.novel_test2.SQLite.SqlAdapter;
 
@@ -165,13 +171,41 @@ private View view;
                 DatabaseReference myRef = database.getReference("mark");
                 int i = 1;
                 Gson gson = new Gson();
-                String jsonString = gson.toJson(markList);
-                Log.i("mark","json: "+jsonString);
-                for(String mark:markList){
-                    myRef.child(userId).child(Integer.toString(i)).setValue(mark);
-                    i++;
-                    Log.i("mark","m= "+mark);
-                }
+                String jsonMark = gson.toJson(markList);
+                myRef.child(userId).child(Integer.toString(i)).setValue(jsonMark);
+
+            }
+        });
+
+        ListView listView = (ListView)view.findViewById(R.id.markListview_id);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1,
+                android.R.id.text1);
+        listView.setAdapter(adapter);
+
+        Button download_firebase = (Button)view.findViewById(R.id.download_id);
+        download_firebase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseReference reference_contacts = FirebaseDatabase.getInstance().getReference("mark");
+                reference_contacts.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Gson gson = new Gson();
+                        adapter.clear();
+                        List<String> markList= gson.fromJson(dataSnapshot.child(userId).child("1").getValue().toString(),new TypeToken<List<String>>(){}.getType());
+                        for(String mark:markList){
+                            //Log.i("getMark","mark: "+mark);
+                            adapter.add(mark);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                adapter.notifyDataSetChanged();
             }
         });
 

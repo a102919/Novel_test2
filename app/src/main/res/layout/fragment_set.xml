@@ -41,14 +41,36 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="345dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/insert_f_id"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/download_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="下載" />
+
+                <Button
+                    android:id="@+id/insert_f_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="上傳" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/markListview_id"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="上傳" />
+                android:background="@color/blue"
+                android:visibility="visible" />
+
         </LinearLayout>
 
         <LinearLayout
