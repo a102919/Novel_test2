@@ -46,9 +46,9 @@ public class homeData implements Serializable {
     }
 
     public int getBookmarks() {
-        int getBookmarks = Bookmarks;
-        this.Bookmarks = 0;
-        return getBookmarks;
+//        int getBookmarks = Bookmarks;
+//        this.Bookmarks = 0;
+        return Bookmarks;
     }
 
     public void setBookmarks(int bookmarks) {

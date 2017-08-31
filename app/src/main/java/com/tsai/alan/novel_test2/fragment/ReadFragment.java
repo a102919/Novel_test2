@@ -28,10 +28,11 @@ import android.widget.TextView;
 
 import com.tsai.alan.novel_test2.Adapter.viewAdatpter;
 import com.tsai.alan.novel_test2.Broadcast.MaekBroadcastReceiver;
-import com.tsai.alan.novel_test2.MainActivity;
+import com.tsai.alan.novel_test2.Broadcast.lifeBroadcast;
 import com.tsai.alan.novel_test2.R;
 import com.tsai.alan.novel_test2.SQLite.SqlAdapter;
 import com.tsai.alan.novel_test2.SettingReceiver;
+import com.tsai.alan.novel_test2.message.downloadMessage;
 import com.tsai.alan.novel_test2.novelData.homeData;
 import com.tsai.alan.novel_test2.setting;
 
@@ -43,6 +44,7 @@ import java.util.Set;
  * A simple {@link Fragment} subclass.
  */
 public class ReadFragment extends Fragment {
+    private static lifeBroadcast mHomeKeyReceiver;
     private View view;
     private homeData data;
     private ViewPager pager;
@@ -125,7 +127,6 @@ public class ReadFragment extends Fragment {
 
                 }else if(arg0 == 1){
                 }else if(arg0 == 2){
-                    Log.i("gooo","goooo");
                     data.setBookmarks(0);
                 }
 
@@ -208,6 +209,10 @@ public class ReadFragment extends Fragment {
                         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intentt);
                     }
                     break;
+                case R.id.download_icon:
+                    downloadMessage downloadMessage = new downloadMessage(getActivity(),data);
+                    downloadMessage.fetchData();
+                    break;
             }
             if(!msg.equals("")) {
             }
@@ -215,8 +220,18 @@ public class ReadFragment extends Fragment {
         }
     };
 
-    public void touchSetting(View view){
+    //注册广播
+    private static void registerHomeKeyReceiver(Context context, homeData data) {
+        mHomeKeyReceiver=new lifeBroadcast(data);
+        final IntentFilter homeFilter =new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        context.registerReceiver(mHomeKeyReceiver, homeFilter);
+    }
 
+    //注销广播
+    private static void unregisterHomeKeyReceiver(Context context) {
+        if(null!=mHomeKeyReceiver) {
+            context.unregisterReceiver(mHomeKeyReceiver);
+        }
     }
 
     @Override
@@ -247,7 +262,9 @@ public class ReadFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("FRAG", "onPause");
+        pageAdapter.saveScrollView();
+        data.saveNovel();
+        Log.d("FRAG", "onPause2: "+data.getBookmarks());
     }
     @Override
     public void onStop() {
